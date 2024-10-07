@@ -1,33 +1,87 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet"> <!-- Monospace Font -->
+    <title>Welcome to My Portfolio!</title>
+</head>
+<body>
 
-{% block title %}
-    Index
-{% endblock %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-black">
+    <div class="container-fluid">
+        <div class="navbar-brand">
+            <a class="btn btn-primary" href="https://www.youtube.com/watch?v=olPLvuvMcSE&ab_channel=DRAXTER%2B&t=1m53s" target="_blank">
+                <span class="highlight">BELIEVE</span>
+            </a>
+            <a class="text-light" href="/" style="text-decoration: none;">
+                in Becoming Employed
+            </a>
+        </div>
 
-{% block main %}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="chess.html">Chess</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="dataScraper.html">imageScraper</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="imageScrambler.html">imageScrambler</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">	
+				<li class="nav-item">
+					<a class="nav-link" href="resume.html">Resume</a>
+				</li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-4">
     <h1>Welcome to My Portfolio!</h1>
-    	<p class="text">On this small website, you will come across a collection of my past and current projects. I hope you enjoy.</p>
-        <p class="text"> QUICK UPDATES: </p>
-        <ul>
-            <li> Chess logic now fully implemented. Works as a simple two player game</li>
-            <li> imageScrambler and dataScraper are mostly done, but I plan to keep working on dataScraper a bit more after I finish Chess. </li>
-			<li> Currently working on other simple scripts which will be uploaded whenever done if I like them enough</li>
-		</ul> 
-		<p class="text">P.S. Click on BELIEVE.</p>
-	<h2>About Me</h2>
-		<p class="text">My name is Luis. I recently graduated from Harvard College with a BA in Computer Science and a minor in Economics. I am currently searching for a position in software developement and/or finance. If you've found this website, you have probably seen my resume, but you can also find it linked above. Rather than go into technical experience, I would rather share some of my interests. </p>
-		<p class="text"> Professional Interests:</p>
-		<ul>
-			<li>Passionate and enthusiastic about ML and AI technologies </li>
-			<li>Systems engineering, accredited to the best class I took in university, CS61</li>
-			<li>Full stack engineering, preference for backend developement</li>
-		</ul>
-		<p class="text"> Personal Interests:</p>
-		<ul>
-			<li>Hobby coding. Building applications that I find interesting or scripts for facilitating repetitive tasks</li>
-			<li>I love playing chess, as you've probably already guessed</li>
-			<li>Am an avid fantasy reader, currently working though A Song of Ice and Fire </li>
-		</ul>
-		
-{% endblock %}
+    <p class="text">On this small website, you will come across a collection of my past and current projects. I hope you enjoy.</p>
+    
+    <p class="text">QUICK UPDATES:</p>
+    <ul>
+        <li>Chess logic now fully implemented. Works as a simple two-player game.</li>
+        <li>imageScrambler and dataScraper are mostly done, but I plan to keep working on dataScraper a bit more after I finish Chess.</li>
+        <li>Currently working on other simple scripts which will be uploaded whenever done if I like them enough.</li>
+    </ul>
+    
+    <p class="text">P.S. Click on BELIEVE.</p>
+    
+    <h2>About Me</h2>
+    <p class="text">My name is Luis. I recently graduated from Harvard College with a BA in Computer Science and a minor in Economics. I am currently searching for a position in software development and/or finance. If you've found this website, you have probably seen my resume, but you can also find it linked above. Rather than go into technical experience, I would rather share some of my interests.</p>
+    
+    <p class="text">Professional Interests:</p>
+    <ul>
+        <li>Passionate and enthusiastic about ML and AI technologies.</li>
+        <li>Systems engineering, accredited to the best class I took in university, CS61.</li>
+        <li>Full stack engineering, preference for backend development.</li>
+    </ul>
+    
+    <p class="text">Personal Interests:</p>
+    <ul>
+        <li>Hobby coding. Building applications that I find interesting or scripts for facilitating repetitive tasks.</li>
+        <li>I love playing chess, as you've probably already guessed.</li>
+        <li>Am an avid fantasy reader, currently working through A Song of Ice and Fire.</li>
+    </ul>
+</main>
+
+<footer class="text-center text-light py-3">
+    <p>&copy; Built on Django</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
