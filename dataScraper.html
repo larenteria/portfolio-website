@@ -1,18 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet"> <!-- Monospace Font -->
+    <title>dataScraper</title>
+</head>
+<body>
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-black">
+    <div class="container-fluid">
+        <div class="navbar-brand">
+            <a class="btn btn-primary" href="https://www.youtube.com/watch?v=olPLvuvMcSE&ab_channel=DRAXTER%2B&t=1m53s" target="_blank">
+                <span class="highlight">BELIEVE</span>
+            </a>
+            <a class="text-light" href="/" style="text-decoration: none;">
+                in Becoming Employed
+            </a>
+        </div>
 
-{% extends "base.html" %}
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-{% block title %}
-    dataScraper
-{% endblock %}
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="chess.html">Chess</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="dataScraper.html">imageScraper</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="imageScrambler.html">imageScrambler</a>
+                </li>
+            </ul>
 
-{% block main %}
-<h1>imageScraper.py</h1>
-<p class="text">Scrape some images! Copy and paste this into a python file, edit the 'images_of' variable with anything you're interested it, and you'll see a new file pop up with all google image results (capped at images per page setting). It's still pretty buggy, you will get every image on the page –including the Google logo and other miscellaneous images. </p>
-<p class="text">Copy the following:</p>  
-<pre><code>
+            <ul class="navbar-nav ms-auto">	
+				<li class="nav-item">
+					<a class="nav-link" href="resume.html">Resume</a>
+				</li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-4">
+    <h1>imageScraper.py</h1>
+    <p class="text">Scrape some images! Copy and paste this into a python file, edit the <code>images_of</code> variable with anything you're interested in, and you'll see a new file pop up with all Google image results (capped at images per page setting). It's still pretty buggy; you will get every image on the page – including the Google logo and other miscellaneous images.</p>
+    <p class="text">Copy the following:</p>  
+    <pre><code>
 """
-
 This script collects images from Google Image Search based on a search query.
 
 Credits: 
@@ -39,7 +79,7 @@ from urllib.parse import urljoin, quote
 """ CHANGE THESE GLOBAL VARIABLES """
 
 # The variable for the search query
-    # Example: "roger federer playing tennis" (Try changing it!)
+# Example: "roger federer playing tennis" (Try changing it!)
 images_of = "roger federer playing tennis"
 
 """END OF GLOBAL VARIABLES"""
@@ -98,7 +138,6 @@ if __name__ == "__main__":
         try:
             # Handle base64 image
             if b.startswith("data:image"):  
-                
                 base64_data = b.split(",")[1]
                 image_content = base64.b64decode(base64_data)
             # Handle normal URL
@@ -109,6 +148,13 @@ if __name__ == "__main__":
             save_image(image_content, file_path)
         except Exception as e:
             print(f"Error processing image {b}: {e}")
-    
-</code></pre>
-{% endblock %}
+    </code></pre>
+</main>
+
+<footer class="text-center text-light py-3">
+    <p>&copy; Built on Django</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
