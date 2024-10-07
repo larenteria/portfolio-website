@@ -1,17 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet"> <!-- Monospace Font -->
+    <title>imageScrambler</title>
+</head>
+<body>
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-black">
+    <div class="container-fluid">
+        <div class="navbar-brand">
+            <a class="btn btn-primary" href="https://www.youtube.com/watch?v=olPLvuvMcSE&ab_channel=DRAXTER%2B&t=1m53s" target="_blank">
+                <span class="highlight">BELIEVE</span>
+            </a>
+            <a class="text-light" href="/" style="text-decoration: none;">
+                in Becoming Employed
+            </a>
+        </div>
 
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-{% extends "base.html" %}
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="chess.html">Chess</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="dataScraper.html">imageScraper</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="imageScrambler.html">imageScrambler</a>
+                </li>
+            </ul>
 
-{% block title %}
-    imageScrambler
-{% endblock %}
+            <ul class="navbar-nav ms-auto">	
+				<li class="nav-item">
+					<a class="nav-link" href="resume.html">Resume</a>
+				</li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-{% block main %}
-<h1>imageScrambler.py</h1>
-<p class="text">Scramble some images! Copy and paste this into a python file, have another image .jpeg in your directory folder that you can edit. Edit the path to the image in your folder, and then you can either make it greyscale, encrypt it, and decrypt it with a password. This is one of my very first projects. Nothing too fancy but still thought I'd share.  </p>
-<p class="text">Copy the following:</p>  
-<pre><code>
+<main class="container my-4">
+    <h1>imageScrambler.py</h1>
+    <p class="text">Scramble some images! Copy and paste this into a python file, have another image .jpeg in your directory folder that you can edit. Edit the path to the image in your folder, and then you can either make it greyscale, encrypt it, and decrypt it with a password. This is one of my very first projects. Nothing too fancy but still thought I'd share.</p>
+    <p class="text">Copy the following:</p>  
+    <pre><code>
 from PIL import Image
 import numpy as np
 
@@ -109,5 +149,13 @@ image1 = grey_scale(image)
 image1.show()
 new_image.show()
 new_image2.show()    
-</code></pre>
-{% endblock %}
+    </code></pre>
+</main>
+
+<footer class="text-center text-light py-3">
+    <p>&copy; Built on Django</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
