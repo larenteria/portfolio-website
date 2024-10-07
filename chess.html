@@ -48,26 +48,25 @@
 </nav>
 
 <main class="container my-4">
-    <h1>chess.py</h1>
-    <p class="text">This chess game was inspired by:</p>
+<h1> chess.py </h1>
+<p class="text">This chess game was inspired by:</P>
 
-    <a href="https://www.youtube.com/watch?v=EnYui0e73Rs&list=PLBwF487qi8MGU81nDGaeNE1EnNEPYWKY_&ab_channel=EddieSharick%28Eddie%29" target="_blank">
-        this Youtube Channel
-    </a>
-    <p class="text">All of the game logic should work correctly, and in the future I hope to make an engine.</p>
-    <p class="text">Currently, this is a two-player game. In order to run it, you have to download all three files and install pygame – chess.py is the application file. In the same directory, you must also create another folder named 'chessPieces', where you must store .png images of every type of chess piece. The notation for those is as follows:</p>
-    <p class="text">'{color initial (w/b)}_piecetype.png'</p>
-    <p class="text">I hope you enjoy! If you have any questions, contact me.</p>
-    
-    <div class="tab-container">
-        <div class="tabs">
-            <button class="tab-button active" onclick="openTab(event, 'tab1')">chess.py</button>
-            <button class="tab-button" onclick="openTab(event, 'tab2')">chessRules.py</button>
-            <button class="tab-button" onclick="openTab(event, 'tab3')">chessCustomization.py</button>
-        </div>
+<a href="https://www.youtube.com/watch?v=EnYui0e73Rs&list=PLBwF487qi8MGU81nDGaeNE1EnNEPYWKY_&ab_channel=EddieSharick%28Eddie%29 " target="_blank">
+                this Youtube Channel
+            </a>
+<p class="text"> All of the game logic should work correctly, and in the future I hope to make an engine.</p>
+<p class="text">Currently, this is a two player game. In order to run it, you have to download all three files and install pygame –chess.py is the application file. In the same directory, you must also create another folder named 'chessPieces', where you must store .png images of every type of chess piece. The notation for those is as follows: </p>
+<p class="text">'{color initial (w/b)}_piecetype.png' </p>
+<p class="text">I hope you enjoy! If you have any questions, contact me.</p>
+<div class="tab-container">
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">chess.py</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">chessRules.py</button>
+        <button class="tab-button" onclick="openTab(event, 'tab3')">chessCustomization.py</button>
+    </div>
 
-        <div id="tab1" class="tab-content active">
-            <pre><code>
+    <div id="tab1" class="tab-content active">
+        <pre><code>
 import pygame
 import chessRules as cr
 import chessCustomization as cc
@@ -89,39 +88,849 @@ TOP_BUFFER = 60  # Buffer height for buttons
 IN_CHECK = False  # Flag to indicate if a player is in check
 SHOW_SETTINGS = False  # Flag to show/hide the settings menu
 
+
 # Pieces
 PIECES = ['b_pawn', 'b_rook', 'b_knight', 'b_bishop', 'b_queen', 'b_king', 'w_pawn', 'w_rook', 'w_knight', 'w_bishop', 'w_queen', 'w_king']
 
 ##########################
 # END GLOBALS ############
 ##########################
-            </code></pre>
-        </div>
 
-        <!-- You can add similar content for other tabs here -->
+##########################
+# SETUP ##################
+##########################
 
+
+# Load images
+def load_images(sq_size):
+    images = {}
+    for piece in PIECES:
+        images[piece] = pygame.transform.scale(pygame.image.load(f'chessPieces/{piece}.png'), (sq_size, sq_size))
+    return images
+
+
+# Draw buttons
+def draw_buttons(screen):
+    font = pygame.font.SysFont(None, 35)
+    settings_button = pygame.Rect(40, 20, 150, 35)  # Button dimensions and position
+    quit_button = pygame.Rect(650, 20, 100, 35)
+    
+    pygame.draw.rect(screen, (200, 200, 200), settings_button)  # Settings button
+    pygame.draw.rect(screen, (200, 200, 200), quit_button)  # Quit button
+    
+    settings_text = font.render('Settings', True, cc.FONT_COLOR)
+    quit_text = font.render('Quit', True, cc.FONT_COLOR)
+    
+    screen.blit(settings_text, (60, 25))
+    screen.blit(quit_text, (670, 25))
+    
+    return settings_button, quit_button
+
+
+# Draw settings menu
+def draw_settings_menu(screen):
+    font = pygame.font.SysFont(None, 36)
+    menu_width, menu_height = 300, 200
+    menu_rect = pygame.Rect((WIDTH - menu_width) // 2, (HEIGHT - menu_height) // 2, menu_width, menu_height)
+    
+    # Draw menu background
+    pygame.draw.rect(screen, cc.SCREEN_COLOR, menu_rect)
+    
+    # Draw buttons for menu options
+    reset_button = pygame.Rect(menu_rect.x + 50, menu_rect.y + 50, 200, 40)
+    color_button = pygame.Rect(menu_rect.x + 50, menu_rect.y + 120, 200, 40)
+    
+    pygame.draw.rect(screen, (150, 150, 150), reset_button)
+    pygame.draw.rect(screen, (150, 150, 150), color_button)
+    
+    reset_text = font.render('Reset Board', True, cc.FONT_COLOR)
+    color_text = font.render('Change Color', True, cc.FONT_COLOR)
+    
+    screen.blit(reset_text, (reset_button.x + 20, reset_button.y + 10))
+    screen.blit(color_text, (color_button.x + 20, color_button.y + 10))
+    
+    return reset_button, color_button
+
+
+# Draw chessboard
+def draw_board(screen, sq_size, selected_square=None, colors=[cc.LIGHT_SQUARES, cc.DARK_SQUARES]):
+    for row in range(ROWS):
+        for col in range(COLS):
+            color = colors[(row + col) % 2]
+            rect = pygame.Rect(col * sq_size, row * sq_size + TOP_BUFFER, sq_size, sq_size)  # Account for buffer
+            pygame.draw.rect(screen, color, rect)
+
+            if selected_square and (row, col) == (selected_square[0], selected_square[1]):
+                color = cc.HIGHLIGHT_COLOR
+                pygame.draw.rect(screen, color, rect, 3)  # Highlight selected square
+            else:
+                pygame.draw.rect(screen, cc.BLACK, rect, 1)  # Draw grid lines
+
+
+# Draw pieces
+def draw_pieces(screen, board, images, sq_size):
+    for row in range(ROWS):
+        for col in range(COLS):
+            piece = board[row][col]
+            if piece != 'X':
+                screen.blit(images[piece], pygame.Rect(col * sq_size, row * sq_size + TOP_BUFFER, sq_size, sq_size))  # Account for buffer
+
+##########################
+# END SETUP ##############
+##########################
+
+
+# Main
+def main():
+    global IN_CHECK, WIDTH, HEIGHT, SQ_SIZE, SHOW_SETTINGS
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+    pygame.display.set_caption('Chess')
+
+    images = load_images(SQ_SIZE)
+
+    board = [
+        ['b_rook', 'b_knight', 'b_bishop', 'b_queen', 'b_king', 'b_bishop', 'b_knight', 'b_rook'],
+        ['b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn', 'b_pawn'],
+        ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+        ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+        ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+        ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+        ['w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn', 'w_pawn'],
+        ['w_rook', 'w_knight', 'w_bishop', 'w_queen', 'w_king', 'w_bishop', 'w_knight', 'w_rook']]
+
+    clock = pygame.time.Clock()
+    running = True
+    selected_piece = None
+    white_turn = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            elif event.type == pygame.VIDEORESIZE:
+                WIDTH, HEIGHT = event.w, event.h
+                SQ_SIZE = min(WIDTH // COLS, (HEIGHT - TOP_BUFFER) // ROWS)  # Update square size based on new dimensions
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+                images = load_images(SQ_SIZE)  # Reload images with the new square size
+                # Handle key press to flip the board
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_f:
+                    board = cr.flip_board(board)
+                    cr.Board_Flipped = not cr.Board_Flipped
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+
+                # Check if a button was clicked
+                settings_button, quit_button = draw_buttons(screen)
+                if settings_button.collidepoint(pos):
+                    SHOW_SETTINGS = not SHOW_SETTINGS  # Toggle settings menu
+                elif quit_button.collidepoint(pos):
+                    pygame.quit()
+                    sys.exit()
+
+                # If settings menu is displayed, check for clicks in it
+                if SHOW_SETTINGS:
+                    reset_button, color_button = draw_settings_menu(screen)
+                    if reset_button.collidepoint(pos):
+                        print("Reset board clicked")
+                        # TODO: Reset board logic here
+                    elif color_button.collidepoint(pos):
+                        print("Change color clicked")
+                        # TODO: Change piece color logic here
+                else:
+                    # Check if a chessboard square was clicked (ignore clicks in settings menu)
+                    if pos[1] > TOP_BUFFER:  # Ignore clicks in the button area
+                        col = pos[0] // SQ_SIZE
+                        row = (pos[1] - TOP_BUFFER) // SQ_SIZE  # Adjust for the buffer
+
+                        if selected_piece:
+                            temp_board, move_made, in_check, is_checkmate_game, draw = cr.make_move(
+                                selected_piece, (row, col), board, white_turn
+                            )
+
+                            if move_made:
+                                board = temp_board
+                                selected_piece = None
+                                white_turn = not white_turn
+                                IN_CHECK = in_check
+
+                                if is_checkmate_game:
+                                    print(f"Checkmate! {'White' if not white_turn else 'Black'} wins!")
+                                if draw:
+                                    print("Draw!")
+
+                            else:
+                                selected_piece = None
+                        else:
+                            piece = board[row][col]
+                            if piece != 'X' and ((white_turn and piece.startswith('w')) or (not white_turn and piece.startswith('b'))):
+                                selected_piece = (row, col, piece)
+        # Draw everything
+        screen.fill(cc.SCREEN_COLOR)
+        settings_button, quit_button = draw_buttons(screen)  # Draw buttons
+        draw_board(screen, SQ_SIZE, selected_piece)  # Draw board
+        draw_pieces(screen, board, images, SQ_SIZE)  # Draw pieces
+
+        if SHOW_SETTINGS:
+            draw_settings_menu(screen)  # Draw settings menu if active
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+    sys.exit()
+
+
+if __name__ == "__main__":
+    main()
+        
+		</code></pre>
     </div>
-</main>
 
-<footer class="text-center text-light py-3">
-    <p>&copy; Built on Django</p>
-</footer>
+    <div id="tab2" class="tab-content">
+        <pre><code>
+"""
+Chess Rules
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+TODO: 
+1. CREATE LUISFISH
+"""
+import pygame
+
+#############################################
+### GLOBALS #################################
+#############################################
+
+###### DYANMIC VARIABLES ####################
+
+# For En Passant:
+Prev_Move = None
+
+# For Castling:
+    # To check if rooks have moved 
+Rook_Moved = {'w': {'left': False, 'right': False}, 'b': {'left': False, 'right': False}}
+    # To check if Kings have moved
+King_Moved = {'w': False, 'b': False}
+
+# For Draw by three-fold repetition and 50-move rule
+move_history = []
+half_moves_since_last_capture_or_pawn_move = 0
+
+# For flipping the board
+Board_Flipped = False
+
+###### END DYANMIC VARIABLES ################
+
+#############################################
+### END GLOBALS #############################
+#############################################
+
+
+
+
+#############################################
+### MOVE VALIDATION #########################
+#############################################
+
+def is_valid_move(piece, start_pos, end_pos, board):
+    end_row, end_col = end_pos
+    
+    if piece[0] == 'w' and board[end_row][end_col].startswith('w'):
+        return False
+    if piece[0] == 'b' and board[end_row][end_col].startswith('b'):
+        return False
+    
+    piece_type = piece[2:]
+    
+    if piece_type == 'pawn':
+        return is_valid_pawn_move(piece, start_pos, end_pos, board)
+    elif piece_type == 'rook':
+        return is_valid_rook_move(start_pos, end_pos, board)        
+    elif piece_type == 'knight':
+        return is_valid_knight_move(start_pos, end_pos)
+    elif piece_type == 'bishop':
+        return is_valid_bishop_move(start_pos, end_pos, board)
+    elif piece_type == 'queen':
+        return is_valid_queen_move(start_pos, end_pos, board)
+    elif piece_type == 'king':
+        return is_valid_king_move(piece, start_pos, end_pos, board)
+    
+    return False
+
+def is_valid_pawn_move(piece, start_pos, end_pos, board):
+    global Prev_Move
+    start_row, start_col = start_pos
+    end_row, end_col = end_pos
+
+    direction = 1 if piece.startswith('w') else -1
+    start_row_initial = 6 if piece.startswith('w') else 1
+    
+    # Move forward
+    if start_col == end_col:
+        if end_row == start_row - direction and board[end_row][end_col] == 'X':
+            return True
+        if start_row == start_row_initial and end_row == start_row - 2*direction and board[start_row - direction][start_col] == 'X' and board[end_row][end_col] == 'X':
+            return True
+    
+    # Capture
+    if abs(start_col - end_col) == 1 and end_row == start_row - direction:
+        # Regular capture
+        if board[end_row][end_col] != 'X':
+            return True
+        
+        # En passant capture
+        if Prev_Move:
+            last_start_pos, last_end_pos, last_piece = Prev_Move
+            last_start_row, _ = last_start_pos
+            last_end_row, last_end_col = last_end_pos
+            
+            if last_piece[2:] == 'pawn' and abs(last_start_row - last_end_row) == 2:
+                if last_end_row == start_row and last_end_col == end_col:
+                    if board[start_row][end_col] == last_piece:
+                        # Perform en passant capture
+                        board[start_row][end_col] = 'X'  # Remove the captured pawn
+                        return True
+    return False
+
+def is_valid_rook_move(start_pos, end_pos, board):
+    start_row, start_col = start_pos
+    end_row, end_col = end_pos
+
+    # Check if the rook is moving in a straight line
+    if start_row != end_row and start_col != end_col:
+        return False
+
+    # Check if there are any pieces in the way
+    if start_row == end_row:
+        step = 1 if start_col < end_col else -1
+        for col in range(start_col + step, end_col, step):
+            if board[start_row][col] != 'X':
+                return False
+    
+    if start_col == end_col:
+        step = 1 if start_row < end_row else -1
+        for row in range(start_row + step, end_row, step):
+            if board[row][start_col] != 'X':
+                return False
+
+    return True
+
+def is_valid_knight_move(start_pos, end_pos):
+    start_row, start_col = start_pos
+    end_row, end_col = end_pos
+    row_diff = abs(start_row - end_row)
+    col_diff = abs(start_col - end_col)
+    
+    return (row_diff == 2 and col_diff == 1) or (row_diff == 1 and col_diff == 2)
+
+def is_valid_bishop_move(start_pos, end_pos, board):
+    start_row, start_col = start_pos
+    end_row, end_col = end_pos
+    
+    if abs(start_row - end_row) != abs(start_col - end_col):
+        return False
+    
+    step_row = 1 if start_row < end_row else -1
+    step_col = 1 if start_col < end_col else -1
+    for i in range(1, abs(start_row - end_row)):
+        if board[start_row + i*step_row][start_col + i*step_col] != 'X':
+            return False
+
+    return True
+
+def is_valid_queen_move(start_pos, end_pos, board):
+    return is_valid_rook_move(start_pos, end_pos, board) or is_valid_bishop_move(start_pos, end_pos, board)
+
+def is_valid_king_move(piece, start_pos, end_pos, board):
+    global King_Moved, Rook_Moved
+    start_row, start_col = start_pos
+    end_row, end_col = end_pos
+    row_diff = abs(start_row - end_row)
+    col_diff = abs(start_col - end_col)
+    
+    if row_diff <= 1 and col_diff <= 1:
+        # Normal king move
+        return True
+
+    # Castling logic
+    if start_row == end_row and not King_Moved[piece[0]]:
+        if end_col == start_col + 2:  # Kingside castling
+            # Check if squares between king and rook are empty and the rook has not moved
+            if not Rook_Moved[piece[0]]['right'] and board[start_row][start_col + 1] == 'X' and board[start_row][start_col + 2] == 'X':
+                # Make sure king doesn't move through/land in check
+                temp_board = [row[:] for row in board]
+                temp_board[start_row][start_col] = 'X'
+                temp_board[start_row][start_col + 1] = piece
+                temp_board[start_row][start_col + 2] = board[start_row][start_col + 3]
+                temp_board[start_row][start_col + 3] = 'X'
+                if not is_in_check(temp_board, piece[0], 8, 8)[0]:
+                    return "kingside_castling"
+
+        elif end_col == start_col - 2:  # Queenside castling
+            # Check if squares between king and rook are empty and the rook has not moved
+            if not Rook_Moved[piece[0]]['left'] and board[start_row][start_col - 1] == 'X' and board[start_row][start_col - 2] == 'X' and board[start_row][start_col - 3] == 'X':
+                # Make sure king doesn't move through/land in check
+                temp_board = [row[:] for row in board]
+                temp_board[start_row][start_col] = 'X'
+                temp_board[start_row][start_col - 1] = piece
+                temp_board[start_row][start_col - 2] = board[start_row][start_col - 4]
+                temp_board[start_row][start_col - 4] = 'X'
+                if not is_in_check(temp_board, piece[0], 8, 8)[0]:
+                    return "queenside_castling"
+
+    return False
+
+
+### END MOVE VALIDATION #####################
+
+
+
+
+#############################################
+### SPECIAL PIECE CIRCUMSTANCES #############
+#############################################
+
+
+############## Pawn Promotion ###############
+def promote_pawn(board, row, col, white_turn):
+    piece_type = None
+    print("Promote pawn to [Q]ueen, [R]ook, [B]ishop, or k[N]ight?") # TODO: Add GUI
+    while piece_type not in ['queen', 'rook', 'bishop', 'knight']:
+        try:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        piece_type = 'queen'
+                    elif event.key == pygame.K_r:
+                        piece_type = 'rook'
+                    elif event.key == pygame.K_b:
+                        piece_type = 'bishop'
+                    elif event.key == pygame.K_k:
+                        piece_type = 'knight'
+                    if piece_type:
+                        break
+        except KeyError:
+            print("Invalid key pressed. Please choose Q, R, B, or K.")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+    new_piece = 'w_' + piece_type if white_turn else 'b_' + piece_type
+    board[row][col] = new_piece
+
+
+######## Castling Update Variables  #########
+
+def update_rook_status(piece, start_pos):
+    global Rook_Moved
+    row, col = start_pos
+    if piece[0] == 'w':
+        if row == 7 and col == 0:
+            Rook_Moved['w']['left'] = True
+        elif row == 7 and col == 7:
+            Rook_Moved['w']['right'] = True
+    elif piece[0] == 'b':
+        if row == 0 and col == 0:
+            Rook_Moved['b']['left'] = True
+        elif row == 0 and col == 7:
+            Rook_Moved['b']['right'] = True
+
+def update_king_status(piece):
+    global King_Moved
+    King_Moved[piece[0]] = True
+
+### END SPECIAL PIECE CIRCUMSTANCES ########
+
+#############################################
+#### EXTRA FUNCTIONS ########################
+#############################################
+
+
+###### Flipping board/coordinates ###########
+def flip_board(board):
+    return [row[::-1] for row in board[::-1]]
+def flip_coordinates(row, col):
+    return 7 - row, 7 - col
+
+#### END EXTRA FUNCTIONS ####################
+
+
+
+
+#############################################
+### CHECK/CHECKMATE/STALEMATE/DRAW ##########
+#############################################
+
+def is_in_check(board, color, rows, cols):
+    # Find the king's position
+    king_pos = None 
+    for row in range(rows):
+        for col in range(cols):
+            if board[row][col] == f'{color}_king':
+                king_pos = (row, col) # Example: of 'w' king
+                break
+        if king_pos:
+            break
+
+    # Check if the king is in check
+    for row in range(rows):
+        for col in range(cols):
+            piece = board[row][col]
+            if piece != 'X' and piece.startswith('b' if color == 'w' else 'w') and is_valid_move(piece, (row, col), king_pos, board):
+                return True, king_pos
+    return False, king_pos
+
+# Example: is_checkmate(board, 'w', 8, 8)
+def is_checkmate(board, color, rows, cols):
+    # Check if the king is in checkmate
+    in_check, king_pos = is_in_check(board, color, rows, cols)
+    if not in_check:
+        # If not in check, check for stalemate
+        is_stalemate_game = is_stalemate(board, color, rows, cols)
+        return False, is_stalemate_game
+
+    # Check all possible moves for the current player
+    for row in range(rows):
+        for col in range(cols):
+            piece = board[row][col]
+            if piece != 'X' and piece.startswith(color):
+                for r in range(rows):
+                    for c in range(cols):
+                        if is_valid_move(piece, (row, col), (r, c), board):
+                            temp_king_pos = king_pos
+                            if piece[2:] == 'king':
+                                king_pos = (r, c)
+                            temp_board = [r[:] for r in board]
+                            temp_board[r][c] = piece
+                            temp_board[row][col] = 'X'
+
+                            # check if the king is still in check after some move
+                            if not is_in_check(temp_board, color, 8, 8)[0]:
+                                return False, False
+                            
+                            king_pos = temp_king_pos
+
+    # If no legal moves left and the king is in check, it's checkmate
+    """ CURRENTLY DOES NOTHING """
+    # checkmate_info = {"losing_king_pos": king_pos, "winning_king_pos": None}
+    # winning_king_color = 'w' if color == 'b' else 'b'
+    # for row in range(rows):
+    #     for col in range(cols):
+    #         if board[row][col] == f'{winning_king_color}_king':
+    #             checkmate_info["winning_king_pos"] = (row, col)
+    #             break
+
+    return True, False  # It's checkmate, not stalemate
+
+def is_stalemate(board, color, rows, cols):
+    for row in range(rows):
+        for col in range(cols):
+            piece = board[row][col]
+            if piece.startswith(color): 
+                # Check for legal moves of the current player and return False if there is any
+                for r in range(rows):
+                    for c in range(cols):
+                        if is_valid_move(piece, (row, col), (r, c), board):
+                            temp_board = [r[:] for r in board]
+                            temp_board[row][col] = 'X'
+                            temp_board[r][c] = piece
+                            if not is_in_check(temp_board, color, rows, cols)[0]:  
+                                return False  
+    return True  
+
+def is_draw(board, color):
+    global move_history, half_moves_since_last_capture_or_pawn_move
+    
+    # Check for three-fold repetition
+    board_tuple = tuple(tuple(row) for row in board)
+    if move_history.count(board_tuple) >= 3:
+        return True, "Three-fold repetition"
+
+    # Check for 50-move rule
+    if half_moves_since_last_capture_or_pawn_move >= 50:
+        return True, "50-move rule"
+
+    # Check for insufficient material
+    insufficient_material, reason = is_draw_by_insufficient_material(board)
+    if insufficient_material:
+        return True, reason
+
+    return False, None # No draw
+
+def is_draw_by_insufficient_material(board):
+    pieces = [piece for row in board for piece in row if piece != 'X']
+
+    # Count pieces by type
+    kings = sum(piece.startswith('w_king') or piece.startswith('b_king') for piece in pieces)
+    bishops = sum(piece.endswith('bishop') for piece in pieces)
+    knights = sum(piece.endswith('knight') for piece in pieces)
+
+    # Only two kings
+    if len(pieces) == 2 and kings == 2:
+        return True, "King vs. King"
+
+    # King vs. King + Bishop
+    if len(pieces) == 3 and kings == 2 and bishops == 1:
+        return True, "King vs. King + Bishop"
+
+    # King vs. King + Knight
+    if len(pieces) == 3 and kings == 2 and knights == 1:
+        return True, "King vs. King + Knight"
+
+    # King + Bishop vs. King + Bishop with same color bishops
+    if len(pieces) == 4 and kings == 2 and bishops == 2:
+        bishop_squares = [row.index(piece) % 2 for row in board for piece in row if piece.endswith('bishop')]
+        if len(set(bishop_squares)) == 1:  # Same color bishops
+            return True, "King + Bishop vs. King + Bishop with same color bishops"
+
+    return False, None
+
+### END CHECK/CHECKMATE/STALEMATE/DRAW ######
+
+
+
+#############################################
+### MAKE MOVE ###############################
+#############################################
+
+def make_move(selected_piece, end_pos, board, white_turn):
+    # Returns: new board state, whether the move was made, whether the player is in check, whether the game is checkmate, and whether the game is a draw
+    global Prev_Move, move_history, half_moves_since_last_capture_or_pawn_move, Board_Flipped
+
+    # Flip board if necessary to make calculations easier
+    if Board_Flipped:
+        board = flip_board(board)
+        start_row, start_col = flip_coordinates(selected_piece[0], selected_piece[1])
+        end_row, end_col = flip_coordinates(end_pos[0], end_pos[1])
+    else: 
+        start_row, start_col = selected_piece[0], selected_piece[1]
+        end_row, end_col = end_pos
+
+    piece = selected_piece[2]
+
+    # Check if the move is valid
+    valid_move = is_valid_move(piece, (start_row, start_col), (end_row, end_col), board)
+
+    # If the move is valid, valid_move == True/False unless it's castling
+    if valid_move:
+        temp_board = [r[:] for r in board]
+
+        if valid_move == "kingside_castling":
+            temp_board[end_row][end_col] = piece
+            temp_board[start_row][start_col] = 'X'
+            temp_board[start_row][start_col + 1] = board[start_row][start_col + 3]
+            temp_board[start_row][start_col + 3] = 'X'
+
+        elif valid_move == "queenside_castling":
+            temp_board[end_row][end_col] = piece
+            temp_board[start_row][start_col] = 'X'
+            temp_board[start_row][start_col - 1] = board[start_row][start_col - 4]
+            temp_board[start_row][start_col - 4] = 'X'
+
+        else:
+            temp_board[start_row][start_col] = 'X'
+            temp_board[end_row][end_col] = piece
+
+        # Pawn promotion check
+        if piece[2:] == 'pawn' and (end_row == 0 or end_row == 7):
+            promote_pawn(temp_board, end_row, end_col, white_turn)
+
+        # Update half-move count
+        if piece[2:] == 'pawn' or board[end_row][end_col] != 'X':
+            half_moves_since_last_capture_or_pawn_move = 0
+        else:
+            half_moves_since_last_capture_or_pawn_move += 1
+
+        # Update move history
+        move_history.append(tuple(tuple(row) for row in temp_board))
+
+        # Check if player tries to make a move that does not take them out of check
+        if is_in_check(temp_board, 'w' if white_turn else 'b', 8, 8)[0]:
+            return None, False, True, None, False
+
+        clr = 'w' if not white_turn else 'b'
+        is_checkmate_game, is_stalemate_game = is_checkmate(temp_board, clr, 8, 8)
+        in_check = not is_stalemate_game and is_in_check(temp_board, clr, 8, 8)[0]
+        draw, draw_reason = is_draw(temp_board, clr)
+
+        # Update Prev_Move for En passant
+        Prev_Move = ((start_row, start_col), (end_row, end_col), piece)
+
+        # Update castling status
+        if valid_move == "kingside_castling":
+            King_Moved[piece[0]] = True
+            Rook_Moved[piece[0]]['right'] = True
+
+        elif valid_move == "queenside_castling":
+            King_Moved[piece[0]] = True
+            Rook_Moved[piece[0]]['left'] = True
+
+        # Update king/rook status for castling
+        if piece[2:] == 'king': 
+            update_king_status(piece)
+        elif piece[2:] == 'rook':
+            update_rook_status(piece, (end_row, end_col))
+
+        if Board_Flipped:
+            temp_board = flip_board(temp_board)
+        return temp_board, True, in_check, is_checkmate_game, is_stalemate_game or draw
+
+    else:
+        return None, False, False, None, False
+    
+### END MAKE MOVE ###########################     
+		</code></pre>
+    </div>
+
+    <div id="tab3" class="tab-content">
+        <pre><code>
+""" 
+Customization 
+
+TODO: 
+ - make settings menu functional
+"""
+
+# Basic Colors
+BLACK = (0, 0, 0)
+DARK_GREY = (80, 80, 80)
+LIGHT_GREY = (200, 200, 200)
+WHITE = (255, 255, 255)
+HIGHLIGHT_COLOR = (186, 202, 68)
+
+# Chessboard color themes
+
+# Theme 1: Classic Brown
+DARK_BROWN = (139, 69, 19)
+LIGHT_BROWN = (245, 222, 179)
+
+# Theme 2: Modern Grey
+DARK_GREY_SQUARE = (50, 50, 50)
+LIGHT_GREY_SQUARE = (220, 220, 220)
+
+# Theme 3: Blue Serenity
+DARK_BLUE = (0, 51, 102)
+LIGHT_BLUE = (173, 216, 230)
+
+# Theme 4: Pink Fantasy
+DARK_PINK = (199, 21, 133)
+LIGHT_PINK = (255, 182, 193)
+
+# Theme 5: Red Passion
+DARK_RED = (139, 0, 0)
+LIGHT_RED = (255, 99, 71)
+
+# Theme 6: Forest Green
+DARK_GREEN = (34, 139, 34)
+LIGHT_GREEN = (144, 238, 144)
+
+# Theme 7: Royal Purple
+DARK_PURPLE = (75, 0, 130)
+LIGHT_PURPLE = (216, 191, 216)
+
+# Theme 8: Orange Sunset
+DARK_ORANGE = (255, 69, 0)
+LIGHT_ORANGE = (255, 165, 0)
+
+# Theme 9: Slate Blue
+DARK_SLATE = (47, 79, 79)
+LIGHT_SLATE = (119, 136, 153)
+
+# Theme 10: Monochrome
+DARK_MONO = (30, 30, 30)
+LIGHT_MONO = (180, 180, 180)
+
+# Chessboard configurations
+CHESSBOARD_THEMES = [
+    (LIGHT_BROWN, DARK_BROWN),         # 0. Classic Brown
+    (LIGHT_GREY_SQUARE, DARK_GREY_SQUARE),  # 1. Modern Grey
+    (LIGHT_BLUE, DARK_BLUE),           # 2. Blue Serenity
+    (LIGHT_PINK, DARK_PINK),           # 3.Pink Fantasy
+    (LIGHT_RED, DARK_RED),             # 4. Red Passion
+    (LIGHT_GREEN, DARK_GREEN),         # 5. Forest Green
+    (LIGHT_PURPLE, DARK_PURPLE),       # 6. Royal Purple
+    (LIGHT_ORANGE, DARK_ORANGE),       # 7. Orange Sunset
+    (LIGHT_SLATE, DARK_SLATE),         # 8. Slate Blue
+    (LIGHT_MONO, DARK_MONO )           # 9. Monochrome
+]
+
+
+
+
+LIGHT_SQUARES, DARK_SQUARES = CHESSBOARD_THEMES[8]
+SCREEN_COLOR = DARK_GREY
+FONT_COLOR = BLACK
+BUTTON_COLOR = LIGHT_GREY
+        
+		</code></pre>
+    </div>
+</div>
+
+<style>
+    .tab-container {
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .tabs {
+        display: flex;
+        background-color: #f1f1f1;
+    }
+
+    .tab-button {
+        background-color: inherit;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .tab-button.active {
+        background-color: #ddd;
+        font-weight: bold;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 10px;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    pre {
+        background-color: #2e2e2e; /* Darker background for code */
+        color: #f8f8f2; /* Light text color */
+        padding: 10px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        overflow: auto;
+    }
+</style>
+
 <script>
-function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
+    function openTab(event, tabName) {
+        // Hide all tab content
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabContents.length; i++) {
+            tabContents[i].classList.remove("active");
+        }
+
+        // Remove active class from all buttons
+        const tabButtons = document.getElementsByClassName("tab-button");
+        for (let i = 0; i < tabButtons.length; i++) {
+            tabButtons[i].classList.remove("active");
+        }
+
+        // Show the current tab and add an active class to the button that opened the tab
+        document.getElementById(tabName).classList.add("active");
+        event.currentTarget.classList.add("active");
     }
-    tablinks = document.getElementsByClassName("tab-button");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
 </script>
 </body>
 </html>
