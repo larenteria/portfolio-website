@@ -1,0 +1,66 @@
+/* General Styles */
+body {
+    font-family: 'Fira Code', monospace;
+    background-color: #282a36; /* Dark background */
+    color: #f8f8f2; /* Light text color */
+    margin: 0;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #21222c; /* Darker background for the navbar */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); /* Subtle shadow */
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #66d9ef; /* Bright cyan color for the brand */
+}
+
+/* Highlighted Text */
+.highlight {
+    color: blue; /* Blue font color for 'Believe' */
+    background-color: yellow; /* Yellow background color for highlighting */
+    padding: 0 5px; /* Optional: Adds a little space around the text */
+    border-radius: 3px; /* Optional: Rounds the corners of the highlight */
+}
+
+.navbar-toggler {
+    border-color: #44475a; /* Toggler border color */
+}
+
+.text {
+    color: #d1d1d1; /* Added missing semicolon */
+}
+
+/* Main Content Styles */
+main {
+    background-color: #44475a; /* Slightly lighter dark gray for main content */
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4); /* Soft shadow */
+}
+
+/* Text Styles */
+h1 { 
+    color: #ff79c6; /* Pink for headings */
+}
+
+h2 {
+    color:  lightblue; /* Matrix green for h2 */
+}
+
+/* Footer Styles */
+footer {
+    border-top: 1px solid #6272a4; /* Light gray top border */
+    padding: 15px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {    
+    .navbar-nav {
+        text-align: center; /* Center navbar items on small screens */
+    }
+}
+
